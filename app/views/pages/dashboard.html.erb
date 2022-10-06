@@ -1,0 +1,177 @@
+<section class="section dashboard p-0">
+
+  <!-- Page Title -->
+  <div class="pagetitle">
+
+    <h1>Wallets</h1>
+
+    <nav>
+
+      <ol class="breadcrumb">
+
+          <!-- Wallets - Tabs -->
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+
+          <% @wallets.each do |wallet| %>
+            <button class="<%= wallet == @wallets.first ? "nav-link active" : "nav-link" %>" id="nav-<%= wallet.name %>-tab" data-bs-toggle="tab" data-bs-target="#nav-<%= wallet.name %>" type="button" role="tab" aria-controls="nav-<%= wallet.name %>" aria-selected="true"><%= wallet.name %></button>
+          <% end %>
+
+          <%= link_to new_user_wallet_path(current_user) do %>
+            <p id="plus">+</p>
+          <% end %>
+
+        </div>
+        <!-- End - Wallets - Tabs -->
+
+      </ol>
+
+    </nav>
+
+  </div>
+  <!-- End Page Title -->
+
+  <div class="row">
+
+    <!-- Left side columns -->
+    <div class="col-lg-8">
+
+      <div class="row">
+
+        <div class="col-12">
+
+          <div class="card recent-sales">
+
+            <div class="card-body">
+
+              <div class="d-flex justify-content-between">
+
+                <h5 class="card-title"> Coins <span>| owned</span></h5>
+
+              </div>
+
+
+              <!-- Wallets - Assets -->
+              <div class="tab-content" id="nav-tabContent">
+                <% @wallets.each do |wallet| %>
+                  <% total = [] %>
+
+                  <div class="<%= wallet == @wallets.first ? "tab-pane fade show active" : "tab-pane fade" %>" id="nav-<%= wallet.name %>" role="tabpanel" aria-labelledby="nav-<%= wallet.name %>-tab">
+
+                    <table class="table table-borderless datatable">
+
+                      <thead>
+
+                        <tr>
+
+                          <th scope="col">#</th>
+                          <th scope="col">Coin</th>
+                          <th scope="col">Amount</th>
+                          <th scope="col">Current Price</th>
+                          <th scope="col">Value (U$)</th>
+                          <th scope="col">24h</th>
+                          <%= link_to new_wallet_asset_path(wallet) do %>
+                            <p>add an asset</p>
+                          <% end %>
+
+                        </tr>
+
+                      </thead>
+
+                      <tbody>
+
+                        <% assets = wallet.assets %>
+                        <% assets.each do |asset| %>
+                          <% coin = coin(@data, asset) %>
+                          <% total.push((asset.amount*coin[:current_price]).round(2)) %>
+                          <tr>
+
+                            <th scope="row"><%= asset.coin_ticker.upcase %></th>
+                            <td><a href="/coin?query=<%= coin[:name] %>"><%= coin[:name] %></a></td>
+                            <td>
+                              <%= asset.amount.round(2) %> |
+                              <%= link_to edit_wallet_asset_path(wallet, asset) do%>
+                                <i class="fas fa-edit"></i>
+                              <% end %>
+
+                            </td>
+                            <td>$<%= number_with_delimiter(coin[:current_price].round(2), :delimiter => ',') %></td>
+                            <td>$<%= number_with_delimiter((asset.amount.round(2)*coin[:current_price]).round(2), :delimiter => ',') %></td>
+                            <td style="color:<%=colorful_percentage(coin[:price_change_percentage_24h])%>"><%= coin[:price_change_percentage_24h].round(2) %>%</td>
+
+                          </tr>
+                        <% end %>
+
+                      </tbody>
+
+                    </table>
+
+                    <!-- Total Section -->
+                    <div class="d-flex">
+
+                      <!-- Total U$ Section -->
+                      <div class="card-body">
+
+                        <h5 class="card-title">Total <span>| USD</span></h5>
+
+                        <div class="d-flex align-items-center">
+
+                          <div class="ps-3">
+
+                            <h6>$<%= number_with_delimiter(total.sum.round(2), :delimiter => ',') %></h6>
+                            <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span>
+
+                          </div>
+
+                        </div>
+
+                      </div>
+                      <!-- End - Total U$ Section -->
+
+                      <!-- Total BTC Section -->
+                      <div class="card-body">
+                        <h5 class="card-title">Total <span>| BTC</span></h5>
+
+                        <div class="d-flex align-items-center">
+                          <div class="ps-3">
+                            <% btc = @data.select{ |key| key["symbol"] == 'btc' }.first.transform_keys(&:to_sym) %>
+                            <h6><%= (total.sum/btc[:current_price]).round(6) %></h6>
+                            <span class="text-success small pt-1 fw-bold">8%</span> <span class="text-muted small pt-2 ps-1">increase</span>
+
+                          </div>
+                        </div>
+                      </div>
+                      <!-- End - Total BTC Section -->
+
+                    </div>
+                    <!-- end Total Section -->
+
+                  </div>
+                <% end %>
+
+                </div>
+
+              </div>
+              <!-- End - Wallets - Assets -->
+
+            </div>
+
+        </div>
+
+      </div>
+    </div>
+    <!-- End Left side columns -->
+
+    <!-- Right side columns -->
+    <div class="col-lg-4">
+
+      <!-- Market Overall -->
+
+
+      <!-- End Market Overall -->
+
+    </div>
+    <!-- End Right side columns -->
+
+  </div>
+
+</section>

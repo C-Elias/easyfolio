@@ -1,0 +1,80 @@
+<section class="section dashboard p-0">
+
+  <div class="row">
+
+    <!-- Left Side -->
+    <div class="col-8">
+
+      <div class="card recent-sales">
+
+        <div class="card-body">
+
+          <h5 class="card-title"> Coins <span>| watchlist</span></h5>
+
+          <table id="table" class="table table-borderless datatable">
+
+            <thead>
+
+              <tr>
+                <th scope="col">Ticker</th>
+                <th scope="col">Coin</th>
+                <th scope="col">Market Cap</th>
+                <th scope="col">Curren Price</th>
+                <th scope="col">24H Change</th>
+              </tr>
+
+            </thead>
+            <tbody>
+
+              <% @tickers.each do |ticker| %>
+
+                <% coin = @data.select{ |key| key["symbol"].downcase == ticker || key["name"].downcase == ticker}.first.transform_keys(&:to_sym) %>
+                <tr class='handle'>
+                  <th scope="row"><%= coin[:symbol].upcase %></th>
+                  <td><a href="/coin?query=<%= coin[:name] %>"><%= coin[:name] %></a></td>
+                  <td>$<%= number_with_delimiter(coin[:market_cap].round(2), :delimiter => ',') %></td>
+                  <td>$<%= number_with_delimiter(coin[:current_price].round(2), :delimiter => ',') %></td>
+                  <td style="color: <%= colorful_percentage(coin[:price_change_percentage_24h])%>"><%= coin[:price_change_percentage_24h].round(2) %>%</td>
+                </tr>
+
+              <% end %>
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </div>
+    <!-- End Left Side -->
+
+    <!-- Right Side -->
+    <div class="col-4">
+
+      <div class="card">
+
+        <div class="card-body">
+
+          <h5 class="card-title"> Add Coin <span>| to watchlist</span></h5>
+
+            <%= simple_form_for [@watchlist, @coin_bookmark] do |f| %>
+
+              <%= f.input :coin_ticker %>
+              <%= f.submit %>
+
+            <% end %>
+
+        </div>
+
+      </div>
+
+    </div>
+    <!-- End Right Side -->
+
+  </div>
+
+</section>
+
+<%# <%= link_to 'Add coins', new_watchlist_coin_bookmark_path(@watchlist), class: 'btn btn-secondary' %>
+<%# <%= link_to '🗑️', watchlist_coin_bookmark_path(@watchlist, ticker), method: :delete %>

@@ -1,0 +1,19 @@
+.footer-home {
+  background-color:  rgb(250, 250, 250);;
+  text-align: center;
+  padding: 8px;
+  a {
+    font-size: 30px;
+    color: $blue;
+    margin: 0 8px;
+  }
+  p {
+    color: rgb(33, 19, 83);
+    opacity: 0.5;
+  }
+  .icon {
+    .fas {
+        color: rgb(245, 24, 24);
+    }
+  }
+}
